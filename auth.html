@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --paper:#F3F5F8;
@@ -75,7 +76,7 @@ footer{padding:24px;text-align:center;font-size:13px;color:var(--ink-soft);borde
 <nav>
   <div class="nav-inner">
     <a class="logo" href="index.html"><span class="logo-dot"></span>AI Growth Base</a>
-    <a class="back" href="https://aigrowthbase.online">← Back to home</a>
+    <a class="back" href="index.html">← Back to home</a>
   </div>
 </nav>
 
@@ -114,83 +115,82 @@ footer{padding:24px;text-align:center;font-size:13px;color:var(--ink-soft);borde
 <footer>© 2026 AI Growth Base · <a href="index.html" style="font-weight:600;text-decoration:none">aigrowthbase.com</a></footer>
 
 <script>
-/* ============================================================
-   GOOGLE SIGN-IN SETUP (5 minutes, one time):
-   1. Go to https://console.cloud.google.com/apis/credentials
-   2. Create project "AI Growth Base"
-   3. Configure OAuth consent screen (External, app name, your email)
-   4. Create Credentials -> OAuth client ID -> Web application
-   5. Authorized JavaScript origins:
-        https://aigrowthbase.com
-        https://www.aigrowthbase.com
-   6. Paste the Client ID below, replacing the placeholder
-   ============================================================ */
-var GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+var SUPABASE_URL = 'https://qbfipmibiuudehrwaydy.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiZmlwbWliaXV1ZGVocndheWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ3ODgsImV4cCI6MjEwMDIyMDc4OH0.FkuiiF5te0mvhm6HMxZezCBO29lhRN2GMk7qqv0j_gI';
+var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+var redirectTo = (window.location.origin || 'https://aigrowthbase.online') + '/index.html';
 
-function parseJwt(t){
-  try{
-    var b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-    return JSON.parse(decodeURIComponent(atob(b).split('').map(function(c){return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
-  }catch(e){return null}
+function showNotice(type, message){
+  var n=document.getElementById('authNotice');
+  n.className='notice ' + type;
+  n.style.display='block';
+  n.textContent=message;
 }
 
-function onGoogleCredential(response){
-  var n=document.getElementById('authNotice');
-  var data=parseJwt(response.credential);
-  if(data&&data.email){
-    n.className='notice ok';n.style.display='block';
-    n.textContent='✓ Signed in with Google as '+data.email+'. If you are an active client, your portal access will be confirmed within 24 hours.';
-  }else{
-    n.className='notice err';n.style.display='block';
-    n.textContent='Google sign-in failed. Please try again or use the magic link.';
-  }
+function setBusy(btn, label, busy){
+  if(!btn)return;
+  btn.disabled=busy;
+  btn.textContent=busy ? label : 'Send magic link ✨';
 }
 
 window.addEventListener('load',function(){
   var slot=document.getElementById('gSlot');
   var fallback=document.getElementById('gFallback');
-  var configured=GOOGLE_CLIENT_ID.indexOf('YOUR_GOOGLE_CLIENT_ID')===-1;
-  if(configured&&window.google&&google.accounts&&google.accounts.id){
-    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});
-    slot.innerHTML='';
-    var holder=document.createElement('div');
-    slot.appendChild(holder);
-    google.accounts.id.renderButton(holder,{theme:'outline',size:'large',shape:'pill',width:340,text:'continue_with'});
-  }else{
-    fallback.addEventListener('click',function(){
-      var n=document.getElementById('authNotice');
-      n.className='notice err';n.style.display='block';
-      n.textContent='Google sign-in is not connected yet. Please use the magic link below.';
+  if(slot && fallback){
+    fallback.addEventListener('click',async function(){
+      fallback.disabled=true;
+      fallback.textContent='Connecting…';
+      var { error } = await supabase.auth.signInWithOAuth({
+        provider:'google',
+        options:{ redirectTo: redirectTo }
+      });
+      if(error){
+        fallback.disabled=false;
+        fallback.textContent='Continue with Google';
+        showNotice('err', 'Google sign-in could not start. Please try the magic link instead.');
+      }
     });
   }
+
+  supabase.auth.getSession().then(function(res){
+    if(res.data && res.data.session){
+      showNotice('ok', '✓ You are already signed in. Redirecting to the home page…');
+      window.location.replace('index.html');
+    }
+  });
+
+  supabase.auth.onAuthStateChange(function(event, session){
+    if(session){
+      window.location.replace('index.html');
+    }
+  });
 });
 
-/* Magic link: sends the request to your inbox via Web3Forms.
-   You reply with the client's access. Swap for Supabase later
-   to make it fully automatic. */
 (function(){
   var form=document.getElementById('magicForm');
   var btn=document.getElementById('magicBtn');
-  var n=document.getElementById('authNotice');
-  form.addEventListener('submit',function(e){
+  if(!form || !btn)return;
+  form.addEventListener('submit',async function(e){
     e.preventDefault();
-    btn.disabled=true;btn.textContent='Sending…';
-    fetch('https://api.web3forms.com/submit',{
-      method:'POST',
-      headers:{'Accept':'application/json'},
-      body:new FormData(form)
-    }).then(function(r){return r.json()}).then(function(res){
-      if(res.success===true||res.success==='true'){
-        form.reset();
-        n.className='notice ok';n.style.display='block';
-        n.textContent='✓ Check your inbox. If your email matches an active client account, your sign-in link is on its way.';
-        btn.textContent='Send magic link ✨';btn.disabled=false;
-      }else{throw new Error('fail')}
-    }).catch(function(){
-      n.className='notice err';n.style.display='block';
-      n.textContent='Something went wrong. Please message us on WhatsApp instead.';
-      btn.textContent='Send magic link ✨';btn.disabled=false;
-    });
+    var email=document.getElementById('magicEmail').value.trim();
+    setBusy(btn, 'Sending…', true);
+    try{
+      var { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options:{
+          emailRedirectTo: redirectTo,
+          shouldCreateUser: true
+        }
+      });
+      if(error){throw error;}
+      form.reset();
+      showNotice('ok', '✓ Check your inbox. We sent you a secure sign-in link.');
+    }catch(err){
+      console.error(err);
+      showNotice('err', 'Something went wrong. Please try again or use WhatsApp for help.');
+    }finally{
+      setBusy(btn, 'Sending…', false);
+    }
   });
 })();
 </script>
