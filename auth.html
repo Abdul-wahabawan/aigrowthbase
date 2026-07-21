@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Access · AI Growth Base</title>
+<meta name="description" content="Sign in to your AI Growth Base client portal.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Crect%20width=%2264%22%20height=%2264%22%20rx=%2214%22%20fill=%22%23122238%22/%3E%3Crect%20x=%2220%22%20y=%2220%22%20width=%2224%22%20height=%2224%22%20rx=%224%22%20transform=%22rotate(45%2032%2032)%22%20fill=%22%23E8A51C%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --paper:#F3F5F8;
+  --card:#FFFFFF;
+  --ink:#0E1B2C;
+  --ink-soft:#445061;
+  --gold:#E8A51C;
+  --gold-deep:#9C6E06;
+  --line:#DCE1E8;
+  --navy-card:#122238;
+  --display:'Bricolage Grotesque',sans-serif;
+  --body:'Instrument Sans',sans-serif;
+  --mono:'Space Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit}
+h1,h2{font-family:var(--display);letter-spacing:-.015em;line-height:1.1}
+
+nav{background:rgba(243,245,248,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-family:var(--display);font-weight:800;font-size:20px;text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo-dot{width:12px;height:12px;border-radius:3px;background:var(--gold);display:inline-block;transform:rotate(45deg)}
+.back{font-size:14.5px;font-weight:600;text-decoration:none;color:var(--ink-soft)}
+.back:hover{color:var(--ink)}
+
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:56px 20px}
+.auth-card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:40px;box-shadow:0 24px 60px rgba(14,27,44,.1);animation:rise .7s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);display:inline-flex;align-items:center;gap:10px;margin-bottom:12px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--gold)}
+.auth-card h1{font-size:26px;margin-bottom:6px}
+.auth-card p.sub{font-size:14.5px;color:var(--ink-soft);margin-bottom:28px}
+
+form{display:flex;flex-direction:column;gap:16px}
+.field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:6px}
+.field input{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-family:var(--body);font-size:15px;color:var(--ink);transition:border-color .2s}
+.field input:focus{border-color:var(--gold);outline:none}
+.btn{font-family:var(--body);font-weight:600;font-size:16px;padding:14px;border-radius:999px;border:none;cursor:pointer;background:var(--gold);color:var(--ink);box-shadow:0 6px 18px rgba(232,165,28,.35);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(232,165,28,.45)}
+.btn:disabled{opacity:.6;cursor:default;transform:none}
+.notice{display:none;font-size:14px;font-weight:600;text-align:center;border-radius:10px;padding:12px;line-height:1.5}
+.notice.ok{background:rgba(31,168,85,.12);color:#157A42}
+.notice.err{background:rgba(220,60,60,.1);color:#B33A3A}
+.helper{font-size:13px;color:var(--ink-soft);text-align:center}
+.helper a{font-weight:600;color:var(--gold-deep);text-decoration:none}
+.helper a:hover{text-decoration:underline}
+.divider{display:flex;align-items:center;gap:14px;color:var(--ink-soft);font-size:12.5px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.g-slot{display:flex;justify-content:center;min-height:44px}
+.g-fallback{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:12px;font-family:var(--body);font-weight:600;font-size:15px;color:var(--ink);cursor:pointer;transition:box-shadow .2s,transform .2s}
+.g-fallback:hover{box-shadow:0 8px 20px rgba(14,27,44,.1);transform:translateY(-1px)}
+.g-fallback svg{width:20px;height:20px;flex-shrink:0}
+
+footer{padding:24px;text-align:center;font-size:13px;color:var(--ink-soft);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html"><span class="logo-dot"></span>AI Growth Base</a>
+    <a class="back" href="index.html">← Back to home</a>
+  </div>
+</nav>
+
+<main>
+  <div class="auth-card">
+    <span class="eyebrow">Client access</span>
+    <h1>Sign in to your portal</h1>
+    <p class="sub">For active AI Growth Base clients. No password needed.</p>
+
+    <form id="magicForm">
+      <input type="hidden" name="access_key" value="1dbad450-233c-40ce-bd1b-3193787fd45f">
+      <input type="hidden" name="subject" value="Magic link sign-in request: AI Growth Base">
+      <input type="hidden" name="from_name" value="AI Growth Base Auth Page">
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+
+      <div class="g-slot" id="gSlot">
+        <button type="button" class="g-fallback" id="gFallback">
+          <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="divider">or use a magic link</div>
+
+      <div class="field">
+        <label for="magicEmail">Email</label>
+        <input type="email" id="magicEmail" name="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <button type="submit" class="btn" id="magicBtn">Send magic link ✨</button>
+      <p class="notice" id="authNotice"></p>
+      <p class="helper">We'll email you a sign-in link. No account yet? <a href="https://wa.me/447916627831" target="_blank" rel="noopener">Message us on WhatsApp</a>.</p>
+    </form>
+  </div>
+</main>
+
+<footer>© 2026 AI Growth Base · <a href="index.html" style="font-weight:600;text-decoration:none">aigrowthbase.com</a></footer>
+
+<script>
+/* ============================================================
+   GOOGLE SIGN-IN SETUP (5 minutes, one time):
+   1. Go to https://console.cloud.google.com/apis/credentials
+   2. Create project "AI Growth Base"
+   3. Configure OAuth consent screen (External, app name, your email)
+   4. Create Credentials -> OAuth client ID -> Web application
+   5. Authorized JavaScript origins:
+        https://aigrowthbase.com
+        https://www.aigrowthbase.com
+   6. Paste the Client ID below, replacing the placeholder
+   ============================================================ */
+var GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+
+function parseJwt(t){
+  try{
+    var b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(atob(b).split('').map(function(c){return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+  }catch(e){return null}
+}
+
+function onGoogleCredential(response){
+  var n=document.getElementById('authNotice');
+  var data=parseJwt(response.credential);
+  if(data&&data.email){
+    n.className='notice ok';n.style.display='block';
+    n.textContent='✓ Signed in with Google as '+data.email+'. If you are an active client, your portal access will be confirmed within 24 hours.';
+  }else{
+    n.className='notice err';n.style.display='block';
+    n.textContent='Google sign-in failed. Please try again or use the magic link.';
+  }
+}
+
+window.addEventListener('load',function(){
+  var slot=document.getElementById('gSlot');
+  var fallback=document.getElementById('gFallback');
+  var configured=GOOGLE_CLIENT_ID.indexOf('YOUR_GOOGLE_CLIENT_ID')===-1;
+  if(configured&&window.google&&google.accounts&&google.accounts.id){
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:onGoogleCredential});
+    slot.innerHTML='';
+    var holder=document.createElement('div');
+    slot.appendChild(holder);
+    google.accounts.id.renderButton(holder,{theme:'outline',size:'large',shape:'pill',width:340,text:'continue_with'});
+  }else{
+    fallback.addEventListener('click',function(){
+      var n=document.getElementById('authNotice');
+      n.className='notice err';n.style.display='block';
+      n.textContent='Google sign-in is not connected yet. Please use the magic link below.';
+    });
+  }
+});
+
+/* Magic link: sends the request to your inbox via Web3Forms.
+   You reply with the client's access. Swap for Supabase later
+   to make it fully automatic. */
+(function(){
+  var form=document.getElementById('magicForm');
+  var btn=document.getElementById('magicBtn');
+  var n=document.getElementById('authNotice');
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    btn.disabled=true;btn.textContent='Sending…';
+    fetch('https://api.web3forms.com/submit',{
+      method:'POST',
+      headers:{'Accept':'application/json'},
+      body:new FormData(form)
+    }).then(function(r){return r.json()}).then(function(res){
+      if(res.success===true||res.success==='true'){
+        form.reset();
+        n.className='notice ok';n.style.display='block';
+        n.textContent='✓ Check your inbox. If your email matches an active client account, your sign-in link is on its way.';
+        btn.textContent='Send magic link ✨';btn.disabled=false;
+      }else{throw new Error('fail')}
+    }).catch(function(){
+      n.className='notice err';n.style.display='block';
+      n.textContent='Something went wrong. Please message us on WhatsApp instead.';
+      btn.textContent='Send magic link ✨';btn.disabled=false;
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
