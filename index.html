@@ -571,7 +571,7 @@ function renderAuthNav(session){
   if(!wrap)return;
   if(session && session.user){
     var email=session.user.email || 'your account';
-    wrap.innerHTML='<div class="auth-pill"><span>✓ '+email+'</span><button type="button" id="logoutBtn">Log out</button></div>';
+    wrap.innerHTML='<div class="auth-pill"><button type="button" id="logoutBtn">Log out</button></div>';
     var logoutBtn=document.getElementById('logoutBtn');
     if(logoutBtn){
       logoutBtn.addEventListener('click',async function(){
