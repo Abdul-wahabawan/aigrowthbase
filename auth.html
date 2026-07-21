@@ -112,13 +112,14 @@ footer{padding:24px;text-align:center;font-size:13px;color:var(--ink-soft);borde
   </div>
 </main>
 
-<footer>© 2026 AI Growth Base · <a href="https://aigrowthbase.online/" style="font-weight:600;text-decoration:none">aigrowthbase.com</a></footer>
+<footer>© 2026 AI Growth Base · <a href="https://aigrowthbase.online/" style="font-weight:600;text-decoration:none">aigrowthbase.online</a></footer>
 
 <script>
 var SUPABASE_URL = 'https://qbfipmibiuudehrwaydy.supabase.co';
 var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFiZmlwbWliaXV1ZGVocndheWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDQ3ODgsImV4cCI6MjEwMDIyMDc4OH0.FkuiiF5te0mvhm6HMxZezCBO29lhRN2GMk7qqv0j_gI';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-var redirectTo = (window.location.origin || 'https://aigrowthbase.online') + '/index.html';
+var redirectTo = 'https://aigrowthbase.online/';
+var authPageUrl = 'https://aigrowthbase.online/auth';
 
 function showNotice(type, message){
   var n=document.getElementById('authNotice');
@@ -155,13 +156,13 @@ window.addEventListener('load',function(){
   supabase.auth.getSession().then(function(res){
     if(res.data && res.data.session){
       showNotice('ok', '✓ You are already signed in. Redirecting to the home page…');
-      window.location.replace('index.html');
+      window.location.replace('https://aigrowthbase.online/');
     }
   });
 
   supabase.auth.onAuthStateChange(function(event, session){
     if(session){
-      window.location.replace('index.html');
+      window.location.replace('https://aigrowthbase.online/');
     }
   });
 });
@@ -187,7 +188,11 @@ window.addEventListener('load',function(){
       showNotice('ok', '✓ Check your inbox. We sent you a secure sign-in link.');
     }catch(err){
       console.error(err);
-      showNotice('err', 'Something went wrong. Please try again or use WhatsApp for help.');
+      var msg = 'Magic link could not be sent. Please make sure your email is correct or use WhatsApp for help.';
+      if(err && err.message){
+        msg = err.message;
+      }
+      showNotice('err', msg);
     }finally{
       setBusy(btn, 'Sending…', false);
     }
